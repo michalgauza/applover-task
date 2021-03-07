@@ -17,14 +17,12 @@ class ApiRepository {
   Future<ApiResult> login({
     @required String email,
     @required String password,
-    ProgressCallback onReceiveProgress,
   }) async {
     assert(email != null);
     assert(password != null);
     return await dioClient.post(
       uri: "/login",
       data: {"email": email, "password": email},
-      onReceiveProgress: onReceiveProgress,
     );
   }
 }
