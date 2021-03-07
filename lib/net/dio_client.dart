@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:login_app/net/api_result.dart';
 
-const _defaultConnectTimeout = Duration.millisecondsPerMinute;
-const _defaultReceiveTimeout = Duration.millisecondsPerMinute;
+const defaultConnectTimeout = Duration.millisecondsPerMinute;
+const defaultReceiveTimeout = Duration.millisecondsPerMinute;
 
 class DioClient {
   final String baseUrl;
@@ -23,8 +21,8 @@ class DioClient {
     _dio = dio ?? Dio();
     _dio
       ..options.baseUrl = baseUrl
-      ..options.connectTimeout = _defaultConnectTimeout
-      ..options.receiveTimeout = _defaultReceiveTimeout
+      ..options.connectTimeout = defaultConnectTimeout
+      ..options.receiveTimeout = defaultReceiveTimeout
       ..httpClientAdapter
       ..options.headers = {'Content-Type': 'application/json; charset=UTF-8'};
     if (interceptors?.isNotEmpty ?? false) {
@@ -78,7 +76,6 @@ class DioClient {
     assert(uri != null);
 
     try {
-      throw SocketException("asd");
       final Response response = await _dio.post(
         uri,
         data: data,
@@ -91,7 +88,13 @@ class DioClient {
       return ApiResult.success(response.data);
     } catch (e) {
       if (e is DioError) {
-        return ApiResult.apiError(e, e.response.data["error"]);
+        if (e.type == DioErrorType.RESPONSE) {
+          return ApiResult.apiError(e, e.response.data["error"]);
+        } else if (e.type == DioErrorType.DEFAULT) {
+          return ApiResult.apiError(e, "Please check your internet connection");
+        } else {
+          return ApiResult.apiError(e, "Ups... Something went wrong");
+        }
       }
       return ApiResult.failure(e);
     }

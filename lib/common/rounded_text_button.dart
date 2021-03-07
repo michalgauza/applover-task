@@ -17,7 +17,7 @@ class RoundedTextButton extends StatelessWidget {
       width: width,
       height: height,
       child: MaterialButton(
-        color: Color(0xFF1DE278),
+        color: Theme.of(context).buttonColor,
         onPressed: onPressed,
         child: Text(
           text,
